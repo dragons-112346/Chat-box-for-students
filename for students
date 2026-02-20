@@ -2,65 +2,112 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Fun Learning Chat</title>
+<title>Fun Learning World</title>
 
 <style>
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: linear-gradient(135deg, #cfd9ff, #f6f7ff);
   margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4, #a1c4fd);
+  min-height: 100vh;
 }
 
-#app {
-  max-width: 800px;
-  margin: 30px auto;
-  background: white;
-  border-radius: 16px;
+/* NAV BAR */
+#nav {
+  display: flex;
+  justify-content: space-around;
+  background: #ffffffcc;
+  padding: 12px;
+  font-weight: bold;
+}
+
+#nav button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* PAGES */
+.page {
+  display: none;
   padding: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-  min-height: 90vh;
+}
+
+.active {
+  display: block;
+}
+
+/* HOME */
+#home {
+  text-align: center;
+  color: #222;
+}
+
+.home-card {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  max-width: 500px;
+  margin: 40px auto;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+.home-card button {
+  display: block;
+  width: 100%;
+  margin: 15px 0;
+  padding: 15px;
+  font-size: 18px;
+  border-radius: 15px;
+  border: none;
+  background: #4f6cff;
+  color: white;
+  cursor: pointer;
+}
+
+/* CHAT */
+#chatBox {
+  max-width: 800px;
+  margin: auto;
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
   display: flex;
   flex-direction: column;
+  min-height: 80vh;
 }
-
-h2 { text-align: center; margin-top: 0; }
 
 #stats {
   text-align: center;
-  font-size: 18px;
-  margin-bottom: 10px;
+  font-weight: bold;
 }
 
 #chat {
   flex: 1;
-  overflow-y: auto;
+  background: #eef1ff;
+  border-radius: 15px;
   padding: 15px;
-  background: #f4f6ff;
-  border-radius: 12px;
-  margin-bottom: 12px;
+  margin: 10px 0;
+  overflow-y: auto;
 }
 
 .bot, .user {
-  max-width: 75%;
-  padding: 10px 14px;
-  border-radius: 14px;
+  padding: 12px 16px;
   margin: 8px 0;
-  font-size: 15px;
+  max-width: 75%;
+  border-radius: 18px;
 }
 
 .bot {
   background: #e0e6ff;
-  color: #1a2d8f;
-  align-self: flex-start;
-  border-bottom-left-radius: 4px;
 }
 
 .user {
   background: #4f6cff;
   color: white;
-  align-self: flex-end;
   margin-left: auto;
-  border-bottom-right-radius: 4px;
 }
 
 #input-area {
@@ -68,152 +115,97 @@ h2 { text-align: center; margin-top: 0; }
   gap: 10px;
 }
 
-input {
+#input-area input {
   flex: 1;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid #ccc;
 }
 
-button {
-  padding: 12px 18px;
-  border-radius: 10px;
+#input-area button {
+  padding: 12px 20px;
+  border-radius: 12px;
   border: none;
   background: #4f6cff;
   color: white;
-  cursor: pointer;
 }
 
-button:hover { background: #3c55cc; }
+/* STORE */
+#store {
+  text-align: center;
+}
 
-/* FLOATING TOUR BUTTON */
-#tourButton {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #ffb703;
-  color: #000;
-  border-radius: 50px;
-  padding: 14px 18px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-  z-index: 1000;
+.store-card {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 500px;
+  margin: auto;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
 }
 </style>
 </head>
 
 <body>
 
-<div id="app">
-  <h2>🎮 Fun Learning Chat</h2>
-  <div id="stats">🪙 Coins: <span id="coins">0</span></div>
-  <div id="chat"></div>
+<!-- NAV -->
+<div id="nav">
+  <button onclick="showPage('home')">🏠 Home</button>
+  <button onclick="showPage('chatPage')">💬 Chat</button>
+  <button onclick="showPage('store')">🛍️ Store</button>
+</div>
 
-  <div id="input-area">
-    <input id="input" placeholder="Ask a question, or type JOKE">
-    <button onclick="send()">Send</button>
+<!-- HOME PAGE -->
+<div id="home" class="page active">
+  <div class="home-card">
+    <h1>🎮 Fun Learning World</h1>
+    <p>Learn step by step, earn coins, and have fun!</p>
+    <button onclick="showPage('chatPage')">💬 Start Learning</button>
+    <button onclick="showPage('store')">🛍️ Go to Store</button>
   </div>
 </div>
 
-<div id="tourButton" onclick="runTour()">👋 TOUR</div>
+<!-- CHAT PAGE -->
+<div id="chatPage" class="page">
+  <div id="chatBox">
+    <div id="stats">🪙 Coins: <span id="coins">0</span></div>
+    <div id="chat"></div>
+    <div id="input-area">
+      <input id="input" placeholder="Ask what you want to learn 😊">
+      <button onclick="send()">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- STORE PAGE -->
+<div id="store" class="page">
+  <div class="store-card">
+    <h2>🛍️ Store</h2>
+    <p>Cool outfits and avatars coming soon!</p>
+    <p>Earn coins by practicing 🎉</p>
+  </div>
+</div>
 
 <script>
+/* PAGE SWITCH */
+function showPage(id) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+/* CHAT LOGIC (SAME AS BEFORE, SHORTENED) */
 let coins = 0;
-let step = 0;
 let inLesson = false;
-let practiceQuestion = 0;
-let topic = "";
+let step = 0;
 
 const chat = document.getElementById("chat");
 
-const jokes = [
-  "Why did the math book look sad? Too many problems!",
-  "Why was six afraid of seven? Because seven eight nine!",
-  "Why did the computer go to school? To improve its bytes!",
-  "Why did the banana go to school? To become a smart peel!",
-  "Why did the ruler feel important? It measured up!",
-  "Why did the eraser feel proud? It fixed mistakes!"
-];
-
-function addMessage(text, who = "bot") {
+function addMessage(text, who="bot") {
   const div = document.createElement("div");
   div.className = who;
   div.textContent = text;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
-}
-
-function updateCoins(n) {
-  coins += n;
-  document.getElementById("coins").textContent = coins;
-}
-
-function isGreeting(text) {
-  return ["hi","hello","hey"].includes(text.toLowerCase());
-}
-
-function startLesson(q) {
-  topic = q.toLowerCase();
-  inLesson = true;
-  step = 1;
-  addMessage("📘 Let’s learn step by step!");
-
-  if (topic.includes("+") || topic.includes("add")) {
-    addMessage("Step 1: What is 2 + 2?");
-  } else if (topic.includes("z")) {
-    addMessage("Step 1: In 1 = z − 1, what should we do first?");
-  } else {
-    addMessage("Step 1: What do you think this problem is asking?");
-  }
-}
-
-function checkLessonAnswer(ans) {
-  const a = ans.toLowerCase();
-
-  if (step === 1) {
-    if ((topic.includes("add") || topic.includes("+")) && ans === "4") {
-      step = 2;
-      addMessage("✅ Correct!");
-      addMessage("Step 2: Why do we add numbers?");
-    } else if (topic.includes("z") && (a.includes("add") || a.includes("move"))) {
-      step = 2;
-      addMessage("✅ Correct!");
-      addMessage("Step 2: What number should we add?");
-    } else {
-      addMessage("❌ Try again — you’ve got this!");
-    }
-  } else if (step === 2) {
-    if (a.includes("together") || a.includes("combine") || a.includes("group") || a.includes("pencil")) {
-      addMessage("🎉 Great explanation!");
-      inLesson = false;
-      startPractice();
-    } else {
-      addMessage("❌ Think about combining things.");
-    }
-  }
-}
-
-function startPractice() {
-  practiceQuestion = 1;
-  addMessage("📝 Practice time! 5 questions — 10 coins each!");
-  askPractice();
-}
-
-function askPractice() {
-  addMessage(`Question ${practiceQuestion}: What is ${practiceQuestion}+${practiceQuestion}?`);
-}
-
-function checkPractice(ans) {
-  if (Number(ans) === practiceQuestion * 2) {
-    addMessage("✅ Correct! +10 coins!");
-    updateCoins(10);
-  } else {
-    addMessage("❌ That’s okay — keep going!");
-  }
-  practiceQuestion++;
-  if (practiceQuestion <= 5) askPractice();
-  else addMessage("🏆 Practice complete!");
 }
 
 function send() {
@@ -224,41 +216,31 @@ function send() {
   addMessage(text, "user");
   input.value = "";
 
-  if (text.toUpperCase() === "JOKE") {
-    addMessage("😂 " + jokes[Math.floor(Math.random()*jokes.length)]);
+  if (!inLesson) {
+    inLesson = true;
+    step = 1;
+    addMessage("📘 Let’s learn step by step!");
+    addMessage("🧩 Step 1: What is 2 + 2?");
     return;
   }
 
-  if (!inLesson && practiceQuestion === 0) {
-    if (isGreeting(text)) {
-      addMessage("👋 Hi! What would you like to learn today?");
-      return;
+  if (step === 1) {
+    if (text === "4") {
+      addMessage("🎉 Correct!");
+      step = 2;
+      addMessage("🧠 Step 2: Why do we add numbers?");
+    } else {
+      addMessage("🤔 Try again!");
     }
-    startLesson(text);
-    return;
+  } else if (step === 2) {
+    addMessage("🏆 Lesson complete!");
+    coins += 10;
+    document.getElementById("coins").textContent = coins;
+    inLesson = false;
   }
-
-  if (inLesson) checkLessonAnswer(text);
-  else if (practiceQuestion > 0) checkPractice(text);
 }
 
-/* TOUR SYSTEM (FIRST 3 TIMES ONLY) */
-let tourCount = Number(localStorage.getItem("tourCount") || 0);
-
-function runTour() {
-  addMessage("👋 Welcome! I teach step by step — no skipping.");
-  addMessage("🧠 I ask questions to check understanding.");
-  addMessage("🪙 Practice earns coins!");
-  addMessage("😂 Type JOKE anytime for fun.");
-}
-
-if (tourCount < 3) {
-  localStorage.setItem("tourCount", tourCount + 1);
-} else {
-  document.getElementById("tourButton").style.display = "none";
-}
-
-addMessage("👋 Hi! Ask a question to start learning.");
+addMessage("👋 Welcome! Go to Home to start.");
 </script>
 
 </body>
