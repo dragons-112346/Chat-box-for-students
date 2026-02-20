@@ -2,269 +2,263 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>LearnQuest – Fun Learning Game</title>
+<title>Fun Learning Chat</title>
 
 <style>
 body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(#c7d2fe, #dcfce7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(135deg, #cfd9ff, #f6f7ff);
+  margin: 0;
 }
 
-.game {
-  width: 540px;
+#app {
+  max-width: 800px;
+  margin: 30px auto;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  min-height: 90vh;
   display: flex;
   flex-direction: column;
 }
 
-.top {
-  background: #4338ca;
-  color: white;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
+h2 { text-align: center; margin-top: 0; }
+
+#stats {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 10px;
 }
 
-.messages {
-  height: 300px;
+#chat {
+  flex: 1;
   overflow-y: auto;
-  padding: 10px;
+  padding: 15px;
+  background: #f4f6ff;
+  border-radius: 12px;
+  margin-bottom: 12px;
 }
 
 .bot, .user {
-  margin: 6px 0;
-  padding: 8px;
-  border-radius: 6px;
+  max-width: 75%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  margin: 8px 0;
+  font-size: 15px;
 }
 
-.bot { background: #eef2ff; }
-.user { background: #dcfce7; align-self: flex-end; }
+.bot {
+  background: #e0e6ff;
+  color: #1a2d8f;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
 
-.controls {
+.user {
+  background: #4f6cff;
+  color: white;
+  align-self: flex-end;
+  margin-left: auto;
+  border-bottom-right-radius: 4px;
+}
+
+#input-area {
   display: flex;
-  gap: 5px;
-  padding: 5px;
+  gap: 10px;
 }
 
-input, select, button {
-  padding: 8px;
-  border: none;
+input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
 }
 
 button {
-  background: #22c55e;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: none;
+  background: #4f6cff;
   color: white;
   cursor: pointer;
 }
 
-.store {
-  border-top: 1px dashed #ccc;
-  padding: 8px;
-  background: #f9fafb;
-  font-size: 13px;
-}
-.store button {
-  background: #6366f1;
-  margin: 2px;
+button:hover { background: #3c55cc; }
+
+/* FLOATING TOUR BUTTON */
+#tourButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ffb703;
+  color: #000;
+  border-radius: 50px;
+  padding: 14px 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+  z-index: 1000;
 }
 </style>
 </head>
 
 <body>
 
-<div class="game">
-  <div class="top">
-    <div>🧑 LearnQuest</div>
-    <div>🪙 Coins: <span id="coins">0</span></div>
-  </div>
+<div id="app">
+  <h2>🎮 Fun Learning Chat</h2>
+  <div id="stats">🪙 Coins: <span id="coins">0</span></div>
+  <div id="chat"></div>
 
-  <div class="messages" id="messages"></div>
-
-  <div class="controls">
-    <select id="subject">
-      <option value="">Subject</option>
-      <option value="math">Math</option>
-      <option value="science">Science</option>
-    </select>
-    <input id="input" placeholder="Type here..." />
+  <div id="input-area">
+    <input id="input" placeholder="Ask a question, or type JOKE">
     <button onclick="send()">Send</button>
-  </div>
-
-  <div class="store">
-    <b>🎨 Character Store (20–50 coins)</b><br>
-    <button onclick="buy('Hair Style',20)">Hair</button>
-    <button onclick="buy('Eye Color',20)">Eyes</button>
-    <button onclick="buy('Skin Color',20)">Skin</button>
-    <button onclick="buy('Shirt',30)">Shirt</button>
-    <button onclick="buy('Pants',30)">Pants</button>
-    <button onclick="buy('Jewelry',20)">Jewelry</button>
-    <button onclick="buy('Cool Outfit',50)">⭐ Cool Outfit</button>
-    <div id="owned"></div>
   </div>
 </div>
 
+<div id="tourButton" onclick="runTour()">👋 TOUR</div>
+
 <script>
-const messages = document.getElementById("messages");
-const input = document.getElementById("input");
-const subjectSelect = document.getElementById("subject");
-const coinsEl = document.getElementById("coins");
-const ownedEl = document.getElementById("owned");
-
 let coins = 0;
-let owned = [];
-let mode = "idle";
 let step = 0;
-let lesson = [];
-let practice = [];
-let practiceIndex = 0;
+let inLesson = false;
+let practiceQuestion = 0;
+let topic = "";
 
-// ---------- CORE ----------
-function addMessage(text, sender="bot") {
+const chat = document.getElementById("chat");
+
+const jokes = [
+  "Why did the math book look sad? Too many problems!",
+  "Why was six afraid of seven? Because seven eight nine!",
+  "Why did the computer go to school? To improve its bytes!",
+  "Why did the banana go to school? To become a smart peel!",
+  "Why did the ruler feel important? It measured up!",
+  "Why did the eraser feel proud? It fixed mistakes!"
+];
+
+function addMessage(text, who = "bot") {
   const div = document.createElement("div");
-  div.className = sender;
-  div.innerText = text;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
+  div.className = who;
+  div.textContent = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
 }
 
-function updateCoins() {
-  coinsEl.innerText = coins;
+function updateCoins(n) {
+  coins += n;
+  document.getElementById("coins").textContent = coins;
 }
 
-function buy(item, cost) {
-  if (coins >= cost && !owned.includes(item)) {
-    coins -= cost;
-    owned.push(item);
-    ownedEl.innerText = "Owned: " + owned.join(", ");
-    updateCoins();
-    addMessage("🎉 You unlocked: " + item);
+function isGreeting(text) {
+  return ["hi","hello","hey"].includes(text.toLowerCase());
+}
+
+function startLesson(q) {
+  topic = q.toLowerCase();
+  inLesson = true;
+  step = 1;
+  addMessage("📘 Let’s learn step by step!");
+
+  if (topic.includes("+") || topic.includes("add")) {
+    addMessage("Step 1: What is 2 + 2?");
+  } else if (topic.includes("z")) {
+    addMessage("Step 1: In 1 = z − 1, what should we do first?");
   } else {
-    addMessage("❌ Not enough coins or already owned.");
+    addMessage("Step 1: What do you think this problem is asking?");
   }
 }
 
-// ---------- AI-LIKE TUTOR (OPTION 1) ----------
-function startTour() {
-  addMessage("👋 Welcome to LearnQuest!");
-  addMessage("🎮 Learn by playing games.");
-  addMessage("🪙 Earn coins by practicing.");
-  addMessage("🎨 Customize your character.");
-  addMessage("Type: TOUR, JOKE, RIDDLE, or GAMES");
+function checkLessonAnswer(ans) {
+  const a = ans.toLowerCase();
+
+  if (step === 1) {
+    if ((topic.includes("add") || topic.includes("+")) && ans === "4") {
+      step = 2;
+      addMessage("✅ Correct!");
+      addMessage("Step 2: Why do we add numbers?");
+    } else if (topic.includes("z") && (a.includes("add") || a.includes("move"))) {
+      step = 2;
+      addMessage("✅ Correct!");
+      addMessage("Step 2: What number should we add?");
+    } else {
+      addMessage("❌ Try again — you’ve got this!");
+    }
+  } else if (step === 2) {
+    if (a.includes("together") || a.includes("combine") || a.includes("group") || a.includes("pencil")) {
+      addMessage("🎉 Great explanation!");
+      inLesson = false;
+      startPractice();
+    } else {
+      addMessage("❌ Think about combining things.");
+    }
+  }
 }
 
-const jokes = [
-  "Why did the math book look sad? Too many problems! 😄",
-  "Why was six afraid of seven? Because seven eight nine! 😂",
-  "Why did the student bring a ladder to school? To reach higher grades! 📚"
-];
-
-function tellJoke() {
-  addMessage("😂 " + jokes[Math.floor(Math.random() * jokes.length)]);
+function startPractice() {
+  practiceQuestion = 1;
+  addMessage("📝 Practice time! 5 questions — 10 coins each!");
+  askPractice();
 }
 
-const riddles = [
-  {q:"What has hands but can’t clap?", a:"A clock ⏰"},
-  {q:"What can you catch but not throw?", a:"A cold 🤧"},
-  {q:"What has a face and two hands?", a:"A clock ⌚"}
-];
-let currentRiddle = null;
-
-function tellRiddle() {
-  currentRiddle = riddles[Math.floor(Math.random() * riddles.length)];
-  addMessage("🧩 Riddle: " + currentRiddle.q);
+function askPractice() {
+  addMessage(`Question ${practiceQuestion}: What is ${practiceQuestion}+${practiceQuestion}?`);
 }
 
-function showGames() {
-  addMessage("🎮 Mini-Games:");
-  addMessage("1️⃣ Math Speed");
-  addMessage("2️⃣ Logic Quiz");
-  addMessage("3️⃣ Word Game");
+function checkPractice(ans) {
+  if (Number(ans) === practiceQuestion * 2) {
+    addMessage("✅ Correct! +10 coins!");
+    updateCoins(10);
+  } else {
+    addMessage("❌ That’s okay — keep going!");
+  }
+  practiceQuestion++;
+  if (practiceQuestion <= 5) askPractice();
+  else addMessage("🏆 Practice complete!");
 }
 
-// ---------- LEARNING ----------
-function buildLesson() {
-  lesson = [
-    {q:"Step 1: What should you do first?", c:"A) Understand\nB) Guess\nC) Rush", a:"A"},
-    {q:"Step 2: Best habit?", c:"A) Careful work\nB) Skip\nC) Copy", a:"A"}
-  ];
-  practice = [
-    {q:"Practice 1:", c:"A) Think\nB) Skip\nC) Guess", a:"A"},
-    {q:"Practice 2:", c:"A) Practice\nB) Avoid\nC) Quit", a:"A"},
-    {q:"Practice 3:", c:"A) Learn\nB) Ignore\nC) Rush", a:"A"},
-    {q:"Practice 4:", c:"A) Try\nB) Quit\nC) Skip", a:"A"},
-    {q:"Practice 5:", c:"A) Correct\nB) Nothing\nC) Skip", a:"A"}
-  ];
-  mode = "lesson";
-  step = 0;
-  practiceIndex = 0;
-  addMessage("📚 Lesson started!");
-  addMessage(lesson[0].q);
-  addMessage(lesson[0].c);
-}
-
-// ---------- INPUT ----------
 function send() {
+  const input = document.getElementById("input");
   const text = input.value.trim();
   if (!text) return;
-  addMessage(text,"user");
+
+  addMessage(text, "user");
   input.value = "";
 
-  const cmd = text.toUpperCase();
-
-  if (cmd === "TOUR") return startTour();
-  if (cmd === "JOKE") return tellJoke();
-  if (cmd === "RIDDLE") return tellRiddle();
-  if (cmd === "GAMES") return showGames();
-
-  if (mode === "idle") {
-    buildLesson();
+  if (text.toUpperCase() === "JOKE") {
+    addMessage("😂 " + jokes[Math.floor(Math.random()*jokes.length)]);
     return;
   }
 
-  if (mode === "lesson") {
-    if (cmd === lesson[step].a) {
-      addMessage("✅ Correct!");
-      step++;
-      if (step < lesson.length) {
-        addMessage(lesson[step].q);
-        addMessage(lesson[step].c);
-      } else {
-        mode = "practice";
-        addMessage("🏁 Lesson complete!");
-        addMessage("🎯 Practice time! +10 coins each");
-        addMessage(practice[0].q);
-        addMessage(practice[0].c);
-      }
-    } else {
-      addMessage("❌ Try again. Think carefully.");
+  if (!inLesson && practiceQuestion === 0) {
+    if (isGreeting(text)) {
+      addMessage("👋 Hi! What would you like to learn today?");
+      return;
     }
-  } else if (mode === "practice") {
-    if (cmd === practice[practiceIndex].a) {
-      coins += 10;
-      updateCoins();
-      addMessage("✅ Correct! +10 coins 🪙");
-    } else {
-      addMessage("❌ Incorrect.");
-    }
-    practiceIndex++;
-    if (practiceIndex < practice.length) {
-      addMessage(practice[practiceIndex].q);
-      addMessage(practice[practiceIndex].c);
-    } else {
-      mode = "idle";
-      addMessage("🎉 Practice complete! Keep playing!");
-    }
+    startLesson(text);
+    return;
   }
+
+  if (inLesson) checkLessonAnswer(text);
+  else if (practiceQuestion > 0) checkPractice(text);
 }
 
-// Start with tour
-startTour();
+/* TOUR SYSTEM (FIRST 3 TIMES ONLY) */
+let tourCount = Number(localStorage.getItem("tourCount") || 0);
+
+function runTour() {
+  addMessage("👋 Welcome! I teach step by step — no skipping.");
+  addMessage("🧠 I ask questions to check understanding.");
+  addMessage("🪙 Practice earns coins!");
+  addMessage("😂 Type JOKE anytime for fun.");
+}
+
+if (tourCount < 3) {
+  localStorage.setItem("tourCount", tourCount + 1);
+} else {
+  document.getElementById("tourButton").style.display = "none";
+}
+
+addMessage("👋 Hi! Ask a question to start learning.");
 </script>
 
 </body>
