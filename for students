@@ -1,247 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Fun Learning World</title>
+  <meta charset="UTF-8" />
+  <title>K–12 Math Tutor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-body {
-  margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: linear-gradient(135deg, #ff9a9e, #fad0c4, #a1c4fd);
-  min-height: 100vh;
-}
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #7dd3fc, #c4b5fd);
+    }
 
-/* NAV BAR */
-#nav {
-  display: flex;
-  justify-content: space-around;
-  background: #ffffffcc;
-  padding: 12px;
-  font-weight: bold;
-}
+    #app {
+      max-width: 900px;
+      margin: auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-#nav button {
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-}
+    #nav {
+      background: #1e293b;
+      color: white;
+      padding: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
 
-/* PAGES */
-.page {
-  display: none;
-  padding: 20px;
-}
+    #nav button {
+      background: #38bdf8;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
 
-.active {
-  display: block;
-}
+    #coins {
+      margin-left: auto;
+    }
 
-/* HOME */
-#home {
-  text-align: center;
-  color: #222;
-}
+    .page {
+      display: none;
+      flex: 1;
+      padding: 20px;
+    }
 
-.home-card {
-  background: white;
-  padding: 25px;
-  border-radius: 20px;
-  max-width: 500px;
-  margin: 40px auto;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-}
+    .page.active {
+      display: block;
+    }
 
-.home-card button {
-  display: block;
-  width: 100%;
-  margin: 15px 0;
-  padding: 15px;
-  font-size: 18px;
-  border-radius: 15px;
-  border: none;
-  background: #4f6cff;
-  color: white;
-  cursor: pointer;
-}
+    #home {
+      text-align: center;
+    }
 
-/* CHAT */
-#chatBox {
-  max-width: 800px;
-  margin: auto;
-  background: white;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-  display: flex;
-  flex-direction: column;
-  min-height: 80vh;
-}
+    #chat {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      height: 65vh;
+      overflow-y: auto;
+    }
 
-#stats {
-  text-align: center;
-  font-weight: bold;
-}
+    .bot {
+      background: #e0f2fe;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 8px;
+    }
 
-#chat {
-  flex: 1;
-  background: #eef1ff;
-  border-radius: 15px;
-  padding: 15px;
-  margin: 10px 0;
-  overflow-y: auto;
-}
+    .user {
+      background: #dcfce7;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: right;
+    }
 
-.bot, .user {
-  padding: 12px 16px;
-  margin: 8px 0;
-  max-width: 75%;
-  border-radius: 18px;
-}
+    #inputBar {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
 
-.bot {
-  background: #e0e6ff;
-}
-
-.user {
-  background: #4f6cff;
-  color: white;
-  margin-left: auto;
-}
-
-#input-area {
-  display: flex;
-  gap: 10px;
-}
-
-#input-area input {
-  flex: 1;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-}
-
-#input-area button {
-  padding: 12px 20px;
-  border-radius: 12px;
-  border: none;
-  background: #4f6cff;
-  color: white;
-}
-
-/* STORE */
-#store {
-  text-align: center;
-}
-
-.store-card {
-  background: white;
-  padding: 30px;
-  border-radius: 20px;
-  max-width: 500px;
-  margin: auto;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-}
-</style>
+    #input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+  </style>
 </head>
 
 <body>
+  <div id="app">
 
-<!-- NAV -->
-<div id="nav">
-  <button onclick="showPage('home')">🏠 Home</button>
-  <button onclick="showPage('chatPage')">💬 Chat</button>
-  <button onclick="showPage('store')">🛍️ Store</button>
-</div>
-
-<!-- HOME PAGE -->
-<div id="home" class="page active">
-  <div class="home-card">
-    <h1>🎮 Fun Learning World</h1>
-    <p>Learn step by step, earn coins, and have fun!</p>
-    <button onclick="showPage('chatPage')">💬 Start Learning</button>
-    <button onclick="showPage('store')">🛍️ Go to Store</button>
-  </div>
-</div>
-
-<!-- CHAT PAGE -->
-<div id="chatPage" class="page">
-  <div id="chatBox">
-    <div id="stats">🪙 Coins: <span id="coins">0</span></div>
-    <div id="chat"></div>
-    <div id="input-area">
-      <input id="input" placeholder="Ask what you want to learn 😊">
-      <button onclick="send()">Send</button>
+    <div id="nav">
+      <button onclick="showPage('home')">🏠 Home</button>
+      <button onclick="showPage('chatPage')">💬 Chat</button>
+      <span id="coins">🪙 Coins: 0</span>
     </div>
+
+    <div id="home" class="page active">
+      <h1>🎓 K–12 Math Tutor</h1>
+      <p>Learn math step by step. No skipping.</p>
+      <button onclick="showPage('chatPage')">Start Learning</button>
+    </div>
+
+    <div id="chatPage" class="page">
+      <div id="chat"></div>
+
+      <div id="inputBar">
+        <input id="input" placeholder="Paste a math problem or type TOUR" />
+        <button onclick="send()">Send</button>
+      </div>
+    </div>
+
   </div>
-</div>
 
-<!-- STORE PAGE -->
-<div id="store" class="page">
-  <div class="store-card">
-    <h2>🛍️ Store</h2>
-    <p>Cool outfits and avatars coming soon!</p>
-    <p>Earn coins by practicing 🎉</p>
-  </div>
-</div>
+  <script>
+    let mode = "idle"; // idle | multiply | algebra
+    let step = 0;
+    let coins = 0;
+    let justFinishedLesson = false;
 
-<script>
-/* PAGE SWITCH */
-function showPage(id) {
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
+    let mulA = 0;
+    let mulB = 0;
+    let zeroCount = 0;
 
-/* CHAT LOGIC (SAME AS BEFORE, SHORTENED) */
-let coins = 0;
-let inLesson = false;
-let step = 0;
-
-const chat = document.getElementById("chat");
-
-function addMessage(text, who="bot") {
-  const div = document.createElement("div");
-  div.className = who;
-  div.textContent = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function send() {
-  const input = document.getElementById("input");
-  const text = input.value.trim();
-  if (!text) return;
-
-  addMessage(text, "user");
-  input.value = "";
-
-  if (!inLesson) {
-    inLesson = true;
-    step = 1;
-    addMessage("📘 Let’s learn step by step!");
-    addMessage("🧩 Step 1: What is 2 + 2?");
-    return;
-  }
-
-  if (step === 1) {
-    if (text === "4") {
-      addMessage("🎉 Correct!");
-      step = 2;
-      addMessage("🧠 Step 2: Why do we add numbers?");
-    } else {
-      addMessage("🤔 Try again!");
+    function updateCoins(amount) {
+      coins += amount;
+      document.getElementById("coins").textContent = "🪙 Coins: " + coins;
     }
-  } else if (step === 2) {
-    addMessage("🏆 Lesson complete!");
-    coins += 10;
-    document.getElementById("coins").textContent = coins;
-    inLesson = false;
-  }
-}
 
-addMessage("👋 Welcome! Go to Home to start.");
-</script>
+    function showPage(id) {
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
 
+    function addMessage(text, who) {
+      const chat = document.getElementById("chat");
+      const div = document.createElement("div");
+      div.className = who;
+      div.textContent = text;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function send() {
+      const input = document.getElementById("input");
+      const text = input.value.trim();
+      if (!text) return;
+
+      addMessage(text, "user");
+      input.value = "";
+
+      setTimeout(() => handle(text.toLowerCase()), 300);
+    }
+
+    function handle(t) {
+
+      if (t === "tour") {
+        addMessage("👋 I teach K–12 math step by step.", "bot");
+        addMessage("✏️ You must answer each step. No skipping.", "bot");
+        return;
+      }
+
+      if (mode === "idle" && (t === "hi" || t === "hello")) {
+        if (justFinishedLesson) {
+          addMessage("😊 Want another problem? Paste one anytime!", "bot");
+          justFinishedLesson = false;
+        } else {
+          addMessage("👋 Hi! Paste a math problem to start.", "bot");
+        }
+        return;
+      }
+
+      // STEP-BY-STEP MULTIPLICATION
+      if (mode === "idle" && t.match(/^\\d+\\s*[x\\*]\\s*\\d+$/)) {
+        const parts = t.replace("x", "*").split("*");
+        mulA = Number(parts[0]);
+        mulB = Number(parts[1]);
+
+        zeroCount =
+          (parts[0].match(/0/g) || []).length +
+          (parts[1].match(/0/g) || []).length;
+
+        mode = "multiply";
+        step = 1;
+        justFinishedLesson = false;
+
+        addMessage("📘 Let’s multiply step by step.", "bot");
+        addMessage("Step 1: Ignore the zeros.", "bot");
+        addMessage("What is 2 × 3 ?", "bot");
+        return;
+      }
+
+      if (mode === "multiply" && step === 1) {
+        if (Number(t) === 6) {
+          addMessage("✅ Correct!", "bot");
+          step = 2;
+          addMessage("Step 2: How many zeros total?", "bot");
+          return;
+        }
+        addMessage("❌ Try again.", "bot");
+        return;
+      }
+
+      if (mode === "multiply" && step === 2) {
+        if (Number(t) === zeroCount) {
+          addMessage("🎉 Correct!", "bot");
+          addMessage(`📘 Final Answer: ${mulA * mulB}`, "bot");
+          addMessage("🏆 +10 coins!", "bot");
+          updateCoins(10);
+          mode = "idle";
+          justFinishedLesson = true;
+          return;
+        }
+        addMessage("❌ Count the zeros again.", "bot");
+        return;
+      }
+
+      // ALGEBRA
+      if (mode === "idle" && t.includes("g") && t.includes("=")) {
+        mode = "algebra";
+        step = 1;
+        justFinishedLesson = false;
+
+        addMessage("📘 Let’s solve step by step.", "bot");
+        addMessage("🎯 Goal: isolate g.", "bot");
+        addMessage("Step 1: What cancels −3g?", "bot");
+        return;
+      }
+
+      if (mode === "algebra" && step === 1) {
+        if (t.includes("3g")) {
+          addMessage("✅ Correct!", "bot");
+          step = 2;
+          addMessage("Step 2: Combine the g terms.", "bot");
+          return;
+        }
+        addMessage("❌ Try again.", "bot");
+        return;
+      }
+
+      if (mode === "algebra" && step === 2) {
+        if (t.includes("2.5")) {
+          addMessage("✅ Correct! 2.5g = 0.25", "bot");
+          step = 3;
+          addMessage("Step 3: How do we isolate g?", "bot");
+          return;
+        }
+        addMessage("❌ Check your math.", "bot");
+        return;
+      }
+
+      if (mode === "algebra" && step === 3) {
+        if (t.includes("divide") || t.includes("2.5")) {
+          addMessage("🎉 Final Answer: g = 0.1", "bot");
+          addMessage("🏆 +10 coins!", "bot");
+          updateCoins(10);
+          mode = "idle";
+          justFinishedLesson = true;
+          return;
+        }
+        addMessage("❌ Hint: divide both sides.", "bot");
+        return;
+      }
+
+      addMessage("🤔 I didn’t understand. Try a math problem.", "bot");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      addMessage("👋 Hi! Paste a problem to start, or type TOUR.", "bot");
+    });
+  </script>
 </body>
 </html>
