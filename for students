@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fun Learning Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6ff;
+      margin: 0;
+      padding: 0;
+    }
+    #app {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 15px;
+      min-height: 100vh;
+    }
+    #chat {
+      height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .bot { color: #1a4cff; margin: 6px 0; }
+    .user { color: #000; margin: 6px 0; text-align: right; }
+    input {
+      width: 80%;
+      padding: 10px;
+    }
+    button {
+      padding: 10px;
+      cursor: pointer;
+    }
+    #stats {
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <h2>🎮 Fun Learning Chat</h2>
+
+  <div id="stats">
+    🪙 Coins: <span id="coins">0</span>
+  </div>
+
+  <div id="chat"></div>
+
+  <input id="input" placeholder="Ask a question, type JOKE, or type TOUR">
+  <button onclick="send()">Send</button>
+</div>
+
+<script>
+let coins = 0;
+let step = 0;
+let inLesson = false;
+let practiceQuestion = 0;
+
+const chat = document.getElementById("chat");
+
+const jokes = [
+  "Why did the math book look sad? Because it had too many problems!",
+  "Why was six afraid of seven? Because seven eight nine!",
+  "Why did the student eat their homework? The teacher said it was a piece of cake!",
+  "Why did the computer go to school? To improve its bytes!",
+  "Why did the pencil cross the road? To draw attention!",
+  "Why did the kid bring a ladder to school? To reach higher grades!",
+  "Why was the equal sign so humble? It knew it wasn’t greater than or less than anyone!",
+  "Why did the clock get kicked out of class? It kept ticking!",
+  "Why did the banana go to school? To become a smart peel!",
+  "Why did the math student bring a calculator? For emotional support!",
+  "Why did the notebook stay calm? It had good lines!",
+  "Why did the ruler feel important? It measured up!",
+  "Why did the teacher wear sunglasses? Because the class was bright!",
+  "Why did the eraser feel proud? It fixed mistakes!",
+  "Why did the student like school jokes? Learning is more fun when you laugh!"
+];
+
+function addMessage(text, who = "bot") {
+  const div = document.createElement("div");
+  div.className = who;
+  div.textContent = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function updateCoins(amount) {
+  coins += amount;
+  document.getElementById("coins").textContent = coins;
+}
+
+function startLesson() {
+  inLesson = true;
+  step = 1;
+  addMessage("📘 Let’s learn step by step!");
+  addMessage("Step 1: What is 2 + 2?");
+}
+
+function checkLessonAnswer(answer) {
+  if (step === 1) {
+    if (answer === "4") {
+      addMessage("✅ Correct! Step 2 next.");
+      step = 2;
+      addMessage("Step 2: Why do we add numbers?");
+    } else {
+      addMessage("❌ Not quite. Try again — you can do it!");
+    }
+  } else if (step === 2) {
+    if (answer.toLowerCase().includes("total") || answer.toLowerCase().includes("together")) {
+      addMessage("🎉 Great job! Lesson complete!");
+      inLesson = false;
+      startPractice();
+    } else {
+      addMessage("❌ Close! Think about combining things.");
+    }
+  }
+}
+
+function startPractice() {
+  practiceQuestion = 1;
+  addMessage("📝 Practice time! Answer 5 questions. Each correct = 10 coins!");
+  askPractice();
+}
+
+function askPractice() {
+  addMessage(`Question ${practiceQuestion}: What is ${practiceQuestion} + ${practiceQuestion}?`);
+}
+
+function checkPractice(answer) {
+  if (Number(answer) === practiceQuestion * 2) {
+    addMessage("✅ Correct! +10 coins!");
+    updateCoins(10);
+  } else {
+    addMessage("❌ That’s okay! Learning takes practice.");
+  }
+  practiceQuestion++;
+  if (practiceQuestion <= 5) {
+    askPractice();
+  } else {
+    addMessage("🏆 Practice finished! Great work!");
+  }
+}
+
+function send() {
+  const input = document.getElementById("input");
+  const text = input.value.trim();
+  if (!text) return;
+
+  addMessage(text, "user");
+  input.value = "";
+
+  if (text.toUpperCase() === "JOKE") {
+    addMessage("😂 " + jokes[Math.floor(Math.random() * jokes.length)]);
+    return;
+  }
+
+  if (text.toUpperCase() === "TOUR") {
+    addMessage("👋 Welcome! Ask questions, learn step by step, earn coins, and have fun!");
+    addMessage("Type JOKE anytime for a laugh 😄");
+    return;
+  }
+
+  if (!inLesson && practiceQuestion === 0) {
+    startLesson();
+    return;
+  }
+
+  if (inLesson) {
+    checkLessonAnswer(text);
+    return;
+  }
+
+  if (practiceQuestion > 0 && practiceQuestion <= 5) {
+    checkPractice(text);
+    return;
+  }
+
+  addMessage("🤖 I’m here to help! Ask another question or type JOKE!");
+}
+
+addMessage("👋 Hi! Ask a question to start learning, or type TOUR.");
+</script>
+
+</body>
+</html>
